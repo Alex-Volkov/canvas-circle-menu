@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            background-color: #eee;
+        }
+    </style>
+
+</head>
+<body>
+<canvas id="canvas1" width="600" height="600" onmousemove="onMouseOver(event)" onclick="onClick(event)"></canvas>
+<button onclick="segments.clearField()">clear</button>
+<button onclick="segments.drawCircleOnce(50)">draw circle</button>
+<button onclick="segments.rotateCircle(true)">rotate</button>
+<script src="segments.js"></script>
+<script src="helpers.js"></script>
+<script>
+    var canvas = document.getElementById('canvas1');
+    var ctx1 = canvas.getContext('2d');
+
+
+    var segments = new Segments(ctx1, {startX: 300, startRadius:110});
+    segments.drawCircle();
+    segments.subscribe(function(){
+//        segments.expandSegments();
+    });
+
+    function onClick(e){
+        var sectorNumber = segments.findSector({x: e.clientX, y: e.clientY});
+        if (sectorNumber !== null){
+//            console.log(sectorNumber);
+            if (segments.isSegmentExpanded(sectorNumber)){
+                segments.putOneBack(sectorNumber)
+
+            }else{
+                segments.takeOneOut(sectorNumber)
+            }
+        }
+    }
+    function onMouseOver(e) {
+        var sectorNumber = segments.findSector({x: e.clientX, y: e.clientY});
+        if (sectorNumber !== null) {
+//            segments.takeOneOut(sectorNumber)
+
+//            console.log(sectorNumber);
+        }
+//        console.log(e);
+    }
+
+
+    //    console.log(segments.isPointInTriangle(
+    //            {x: 20, y: 65},
+    //            {x: 20, y: 60},
+    //            {x: 50, y: 70},
+    //            {x: 70, y: 30}
+    //    ));
+    //
+    //console.log(segments.isPointInTriangle(
+    //        {x: 588, y: 211}, {x: 200, y: 200},{x: 308, y: 137} , {x: 325, y: 200}
+    //));
+
+</script>
+</body>
+</html>
