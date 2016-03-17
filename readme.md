@@ -10,4 +10,5 @@ HTML5 Canvas based menu in shape of circles. It provides differently colored seg
     }
 ```
 ![alt canvas segment menu](segment.png)
-[demo page](alex-volkov.github.io/canvas-circle-menu)
+
+[demo page](http://alex-volkov.github.io/canvas-circle-menu/)
