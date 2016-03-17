@@ -11,38 +11,70 @@
         canvas {
             background-color: #eee;
         }
+        .events{
+            list-style: none;
+        }
     </style>
 
 </head>
 <body>
-<canvas id="canvas1" width="600" height="600" onmousemove="onMouseOver(event)" onclick="onClick(event)"></canvas>
-<button onclick="segments.clearField()">clear</button>
-<button onclick="segments.drawCircleOnce(50)">draw circle</button>
-<button onclick="segments.rotateCircle(true)">rotate</button>
+<canvas id="canvas1" width="600" height="600" onclick="onClick(event)"></canvas>
+
+<ul class="events">
+
+</ul>
+<!--<button onclick="segments.clearField()">clear</button>-->
+<!--<button onclick="segments.drawCircleOnce(50)">draw circle</button>-->
+<!--<button onclick="segments.rotateCircle(true)">rotate</button>-->
 <script src="segments.js"></script>
 <script src="helpers.js"></script>
 <script>
     var canvas = document.getElementById('canvas1');
     var ctx1 = canvas.getContext('2d');
+    var events = document.getElementsByClassName('events')[0];
 
+    var segments = new Segments(ctx1, {startX: 300, startRadius:110, afterInit: afterSegmentsInit});
+    function afterSegmentsInit(){
+//        singleClick();
+//        return false;
+        segments.onClick({x: 362, y: 148}, function(){
+            setTimeout(function(){
+                segments.onClick({x: 362, y: 148}, function(data){
+                    showResponse(data);
+                    setTimeout(function(){
+                        singleClick();
 
-    var segments = new Segments(ctx1, {startX: 300, startRadius:110});
-    segments.drawCircle();
-    segments.subscribe(function(){
-//        segments.expandSegments();
-    });
-
-    function onClick(e){
-        var sectorNumber = segments.findSector({x: e.clientX, y: e.clientY});
-        if (sectorNumber !== null){
-//            console.log(sectorNumber);
-            if (segments.isSegmentExpanded(sectorNumber)){
-                segments.putOneBack(sectorNumber)
-
-            }else{
-                segments.takeOneOut(sectorNumber)
-            }
+                    }, 1000)
+                })
+            }, 1000)
+        });
+        function singleClick(){
+            segments.onClick({x: 214, y: 223}, function(){
+                console.log('cb');
+                setTimeout(function(){
+                    segments.onClick({x: 419, y: 196}, function(data){
+                        showResponse(data);
+                    })
+                }, 1000)
+            })
         }
+//    segments.drawSubmenu(4, function(){
+//            setTimeout(function(){
+////                segments.onClick({x: 214, y: 223})
+//            }, 500)
+//            console.log('all runned');
+//        });
+    }
+    function showResponse(data){
+        if(!data) return false;
+        var res = [];
+        for(var index in data){
+            res.push('<li>' + index + ': ' + data[index] + '</li>');
+        }
+        events.innerHTML = res.join('');
+    }
+    function onClick(e){
+        segments.onClick({x: e.clientX, y: e.clientY}, showResponse);
     }
     function onMouseOver(e) {
         var sectorNumber = segments.findSector({x: e.clientX, y: e.clientY});

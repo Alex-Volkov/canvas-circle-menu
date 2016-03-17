@@ -4,9 +4,36 @@
 var Helpers = (function () {
 	var module = {
 		HSVtoRGB: HSVtoRGB,
-		RGBtoHSV: RGBtoHSV
+		RGBtoHSV: RGBtoHSV,
+		isPointInTriangle: isPointInTriangle,
+		calcTriArea: calcTriArea,
+		getContrast50: getContrast50,
+		getContrastYIQ: getContrastYIQ
 	};
 
+	function rgbToHex(R, G, B) {
+		return toHex(R) + toHex(G) + toHex(B)
+	}
+	function getContrast50(color){
+		var hexcolor = rgbToHex(color.r, color.g, color.b);
+		console.log(hexcolor);
+		return (parseInt(hexcolor, 16) > 0xffffff/2) ? 'black':'white';
+	}
+	function toHex(n) {
+		n = parseInt(n, 10);
+		if (isNaN(n)) return "00";
+		n = Math.max(0, Math.min(n, 255));
+		return "0123456789ABCDEF".charAt((n - n % 16) / 16)
+			+ "0123456789ABCDEF".charAt(n % 16);
+	}
+	function getContrastYIQ(color){
+		var hexcolor = rgbToHex(color.r, color.g, color.b);
+		var r = parseInt(hexcolor.substr(0,2),16);
+		var g = parseInt(hexcolor.substr(2,2),16);
+		var b = parseInt(hexcolor.substr(4,2),16);
+		var yiq = ((r*299)+(g*587)+(b*114))/1000;
+		return (yiq >= 128) ? 'black' : 'white';
+	}
 	function HSVtoRGB(h, s, v) {
 		var r, g, b, i, f, p, q, t;
 		if (arguments.length === 1) {
@@ -77,6 +104,20 @@ var Helpers = (function () {
 			s: s,
 			v: v
 		};
+	}
+
+	// finding is the point inside of the triangle
+	function isPointInTriangle(pt, v1, v2, v3) {
+		var area1 = calcTriArea(pt, v1, v2) < 0;
+		var area2 = calcTriArea(pt, v2, v3) < 0;
+		var area3 = calcTriArea(pt, v3, v1) < 0;
+		return area1 == area2 && area2 == area3;
+	}
+
+	// getting square of the triangle
+	function calcTriArea(v1, v2, v3) {
+		var det = (v1.x - v3.x) * (v2.y - v3.y) - (v2.x - v3.x) * (v1.y - v3.y);
+		return det;
 	}
 
 	return module;
